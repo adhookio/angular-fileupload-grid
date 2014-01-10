@@ -72,6 +72,15 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\app.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\Content\crud-grid-directive.css" />
+    <Content Include="app\components\angular-fileupload-grid\dist\Content\toastr.css" />
+    <Content Include="app\components\angular-fileupload-grid\dist\crud-grid-directive.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\model-change-blur-directive.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\Services\crud-grid-data-factory.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\Services\notification-factory.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\Templates\crud-grid-directive-template.html" />
     <Content Include="app\components\angular-resource\angular-resource.js" />
     <Content Include="app\components\angular-resource\angular-resource.min.js" />
     <Content Include="app\components\angular\angular-csp.css" />
@@ -402,6 +411,8 @@
     <Content Include="app\components\bootstrap\package.json" />
     <Content Include="app\components\bootstrap\README.md" />
     <Content Include="app\components\bootstrap\_config.yml" />
+    <Content Include="app\components\angular-fileupload-grid\.bower.json" />
+    <Content Include="app\components\angular-fileupload-grid\README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
