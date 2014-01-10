@@ -7,7 +7,7 @@
             restrict: 'A',
             replace: false,
             scope: true,
-            templateUrl: '/app/components/angular-fileupload-grid/dist/Templates/crud-grid-directive-template.html',
+            templateUrl: 'components/angular-fileupload-grid/dist/Templates/crud-grid-directive-template.html',
             controller: ['$scope', '$element', '$attrs', '$upload', 'crudGridDataFactory', 'notificationFactory',
                 function ($scope, $element, $attrs, $upload, crudGridDataFactory, notificationFactory) {
                     $scope.objects = [];
