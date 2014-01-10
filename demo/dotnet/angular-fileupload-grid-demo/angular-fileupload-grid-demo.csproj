@@ -72,23 +72,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app\components\angular-cookies\angular-cookies.js" />
-    <Content Include="app\components\angular-cookies\angular-cookies.min.js" />
-    <Content Include="app\components\angular-file-upload\angular-file-upload-html5-shim.min.js" />
-    <Content Include="app\components\angular-file-upload\angular-file-upload-shim.min.js" />
-    <Content Include="app\components\angular-file-upload\angular-file-upload.min.js" />
-    <Content Include="app\components\angular-ng-grid\ng-grid-2.0.6.debug.js" />
-    <Content Include="app\components\angular-ng-grid\ng-grid-2.0.6.min.js" />
-    <Content Include="app\components\angular-ng-grid\ng-grid.css" />
-    <Content Include="app\components\angular-ng-grid\ng-grid.min.css" />
     <Content Include="app\components\angular-resource\angular-resource.js" />
     <Content Include="app\components\angular-resource\angular-resource.min.js" />
-    <Content Include="app\components\angular-ui\build\angular-ui-ieshiv.js" />
-    <Content Include="app\components\angular-ui\build\angular-ui-ieshiv.min.js" />
-    <Content Include="app\components\angular-ui\build\angular-ui.css" />
-    <Content Include="app\components\angular-ui\build\angular-ui.js" />
-    <Content Include="app\components\angular-ui\build\angular-ui.min.css" />
-    <Content Include="app\components\angular-ui\build\angular-ui.min.js" />
     <Content Include="app\components\angular\angular-csp.css" />
     <Content Include="app\components\angular\angular.js" />
     <Content Include="app\components\angular\angular.min.js" />
@@ -99,6 +84,14 @@
     <Content Include="app\components\jquery\jquery.min.js" />
     <Content Include="app\components\json3\lib\json3.js" />
     <Content Include="app\components\json3\lib\json3.min.js" />
+    <Content Include="app\components\ng-file-upload\angular-file-upload-html5-shim.js" />
+    <Content Include="app\components\ng-file-upload\angular-file-upload-html5-shim.min.js" />
+    <Content Include="app\components\ng-file-upload\angular-file-upload-shim.js" />
+    <Content Include="app\components\ng-file-upload\angular-file-upload-shim.min.js" />
+    <Content Include="app\components\ng-file-upload\angular-file-upload.js" />
+    <Content Include="app\components\ng-file-upload\angular-file-upload.min.js" />
+    <Content Include="app\components\ng-file-upload\FileAPI.flash.swf" />
+    <Content Include="app\components\ng-file-upload\FileAPI.min.js" />
     <Content Include="app\components\toastr\toastr.js" />
     <Content Include="app\components\toastr\toastr.min.js" />
     <Content Include="app\scripts\app.js" />
@@ -112,12 +105,6 @@
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="packages.config" />
-    <Content Include="app\components\angular-cookies\.bower.json" />
-    <Content Include="app\components\angular-cookies\angular-cookies.min.js.map" />
-    <Content Include="app\components\angular-cookies\bower.json" />
-    <Content Include="app\components\angular-cookies\README.md" />
-    <Content Include="app\components\angular-ng-grid\package.json" />
-    <Content Include="app\components\angular-ng-grid\README.md" />
     <Content Include="app\components\angular-resource\.bower.json" />
     <Content Include="app\components\angular-resource\angular-resource.min.js.map" />
     <Content Include="app\components\angular-resource\bower.json" />
@@ -232,6 +219,10 @@
     <Content Include="app\styles\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="app\styles\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="app\styles\toastr.less" />
+    <Content Include="app\components\ng-file-upload\.bower.json" />
+    <Content Include="app\components\ng-file-upload\bower.json" />
+    <Content Include="app\components\ng-file-upload\LICENSE" />
+    <Content Include="app\components\ng-file-upload\README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
