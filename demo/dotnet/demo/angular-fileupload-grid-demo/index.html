@@ -1,0 +1,38 @@
+﻿<!doctype html>
+<html ng-app="app">
+    <head>
+        <title>AngularJS File Upload Grid</title>
+        <link rel="stylesheet" href="app/styles/bootstrap/bootstrap.css">
+        <link rel="stylesheet" href="app/styles/toastr.css"/>
+        <link rel="stylesheet" href="app/styles/fontawesome/font-awesome.css">
+        <link rel="stylesheet" href="app/styles/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="app/scripts/Directives/Content/crud-grid-directive.css" />
+        
+        <script src="app/components/angular/angular.js" type="text/javascript"></script>
+        <script src="app/components/jquery/jquery.js" type="text/javascript"></script>
+        <script src="app/components/toastr/toastr.js" type="text/javascript"></script>
+        <script src="app/components/angular-cookies/angular-cookies.js" type="text/javascript"></script>
+        <script src="app/components/angular-resource/angular-resource.js" type="text/javascript"></script>
+        <script src="app/components/toastr/toastr.js" type="text/javascript"></script>
+        <script src="app/components/angular-file-upload/angular-file-upload.min.js"></script>
+
+        <script src="app/scripts/app.js" type="text/javascript"></script>
+        <script src="app/scripts/Services/notification-factory.js"></script>
+        <script src="app/scripts/Directives/Services/crud-grid-data-factory.js"></script>
+        <script src="app/scripts/Directives/crud-grid-directive.js"></script>
+        <script src="app/scripts/Directives/model-change-blur-directive.js"></script>
+    </head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h1>Files</h1>
+            <div crud-grid table='File' columns='
+                 [{"name":"Id","class":"col-md-1","autoincrement": "true"},
+                 {"name":"Name", "class": "col-md-2"},
+                 {
+                  "name":"Url", "class": "col-md-3"
+                 }]' class="col-md-9" hasFileUpload="true"></div>
+        </div>
+    </div>
+</body>
+</html>
