@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "homepage": "https://github.com/woozles/angular-fileupload-grid",
   "authors": [
-    "pa.roos@icloud.com", "an.schuermann@gmail.com"
+    "paroos", "anschuermann"
   ],
   "description": "AngularJS CRUD Grid with drag & drop fileupload",
   "keywords": [
