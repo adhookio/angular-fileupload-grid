@@ -72,14 +72,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app.js" />
-    <Content Include="app\components\angular-fileupload-grid\dist\app.js" />
+    <Content Include="app\app.js" />
+    <Content Include="app\components\angular-fileupload-grid\dist\angular-fileupload-grid.js" />
     <Content Include="app\components\angular-fileupload-grid\dist\Content\crud-grid-directive.css" />
     <Content Include="app\components\angular-fileupload-grid\dist\Content\toastr.css" />
-    <Content Include="app\components\angular-fileupload-grid\dist\crud-grid-directive.js" />
-    <Content Include="app\components\angular-fileupload-grid\dist\model-change-blur-directive.js" />
-    <Content Include="app\components\angular-fileupload-grid\dist\Services\crud-grid-data-factory.js" />
-    <Content Include="app\components\angular-fileupload-grid\dist\Services\notification-factory.js" />
     <Content Include="app\components\angular-fileupload-grid\dist\Templates\crud-grid-directive-template.html" />
     <Content Include="app\components\angular-resource\angular-resource.js" />
     <Content Include="app\components\angular-resource\angular-resource.min.js" />
@@ -226,16 +222,8 @@
     <Content Include="app\components\ng-file-upload\FileAPI.min.js" />
     <Content Include="app\components\toastr\toastr.js" />
     <Content Include="app\components\toastr\toastr.min.js" />
-    <Content Include="app\scripts\app.js" />
-    <Content Include="app\scripts\Directives\Content\crud-grid-directive.css" />
-    <Content Include="app\scripts\Directives\Content\toastr.css" />
-    <Content Include="app\scripts\Directives\crud-grid-directive.js" />
-    <Content Include="app\scripts\Directives\model-change-blur-directive.js" />
-    <Content Include="app\scripts\Directives\Services\crud-grid-data-factory.js" />
-    <Content Include="app\scripts\Directives\Templates\crud-grid-directive-template.html" />
-    <Content Include="app\scripts\Services\notification-factory.js" />
     <Content Include="Global.asax" />
-    <Content Include="index.html" />
+    <Content Include="app\index.html" />
     <Content Include="packages.config" />
     <Content Include="app\components\angular-resource\.bower.json" />
     <Content Include="app\components\angular-resource\angular-resource.min.js.map" />
@@ -434,7 +422,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>8312</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:2611/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

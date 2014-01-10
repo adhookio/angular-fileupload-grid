@@ -15,7 +15,6 @@ namespace demo
 
             public override void Configure(Container container)
             {
-          
             }
         }
 
