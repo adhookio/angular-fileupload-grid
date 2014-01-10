@@ -14,9 +14,7 @@
     "Bootstrap"
   ],
   "ignore": [
-    "demo",
-    "bower.json",
-    ".gitignore"
+    "demo"
   ],
   "dependencies" : {
       "angular":"1.2.7",
