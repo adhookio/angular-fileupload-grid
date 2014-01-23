@@ -6,7 +6,9 @@
         return {
             restrict: 'A',
             replace: false,
-            scope: true,
+            scope: {
+                "table" : "@"
+            },
             templateUrl: '/app/components/angular-fileupload-grid/dist/Templates/crud-grid-directive-template.html',
             controller: ['$scope', '$element', '$attrs', '$upload', 'crudGridDataFactory', 'notificationFactory',
                 function ($scope, $element, $attrs, $upload, crudGridDataFactory, notificationFactory) {
@@ -16,13 +18,16 @@
                     $scope.columns = angular.fromJson($attrs.columns);
                     $scope.addMode = false;
                     $scope.orderBy = { field: 'Name', asc: true };
-                    $scope.loading = true;
+                    $scope.loading = false;
                     $scope.filter = '';
                     $scope.isUploading = false;
                     $scope.uploadPercent = 0;
-                    console.log("directive loaded");
-
-                    var $docScope = angular.element(document).scope();
+                    $scope.dataUrl = "";
+                  
+                    $attrs.$observe('table', function (newValue) {
+                        $scope.dataUrl = newValue;
+                        $scope.getData('');
+                    });
 
                     $scope.setLookupData = function () {
                         for (var i = 0; i < $scope.columns.length; i++) {
@@ -77,8 +82,11 @@
 
                     var successCallback = function (e, cb) {
                         //notificationFactory.success();
-                        $docScope.$broadcast('lookupDataChange', [$attrs.table]);
-                        $scope.getData(cb);
+                        if($scope.dataUrl)
+                        {
+                            $scope.$broadcast('lookupDataChange', [$scope.dataUrl]);
+                            $scope.getData(cb);
+                        }
                     };
 
                     var successPostCallback = function (e) {
@@ -97,24 +105,35 @@
 
                     $scope.addObject = function () {
                         console.log('add object url: ' + $scope.object['Url']);
-                        crudGridDataFactory($attrs.table).save($scope.object, successPostCallback, errorCallback);
+                        if($scope.dataUrl)
+                        {
+                            crudGridDataFactory($scope.dataUrl).save($scope.object, successPostCallback, errorCallback);
+                        }
                     };
 
                     $scope.deleteObject = function (object) {
-                        crudGridDataFactory($attrs.table).delete({ id: object.Id }, successCallback, errorCallback);
+                        if($scope.dataUrl)
+                        {
+                            crudGridDataFactory($scope.dataUrl).delete({ id: object.Id }, successCallback, errorCallback);
+                        }
                     };
 
                     $scope.updateObject = function (object) {
-                        console.log(object.Name);
-                        crudGridDataFactory($attrs.table).update({ id: object.Id }, object, successCallback, errorCallback);
+                        if($scope.dataUrl)
+                        {
+                            crudGridDataFactory($scope.dataUrl).update({ id: object.Id }, object, successCallback, errorCallback);
+                        }
                     };
 
                     $scope.getData = function (cb) {
-
-                        crudGridDataFactory($attrs.table).query(function (data) {
-                            $scope.objects = data;
-                            if (cb) cb();
-                        });
+                        $scope.setLookupData();
+                        if($scope.dataUrl)
+                        {
+                            crudGridDataFactory($scope.dataUrl).query(function (data) {
+                                $scope.objects = data;
+                                if (cb) cb();
+                            });
+                        }
                     };
 
                     $scope.setOrderBy = function (field) {
@@ -129,13 +148,12 @@
                         });
 
                     $scope.onFileSelect = function ($files) {
-                        console.log("File Upload");
                         $scope.isUploading = true;
                         //$files: an array of files selected, each file has name, size, and type.
                         for (var i = 0; i < $files.length; i++) {
                             var file = $files[i];
                             $scope.upload = $upload.upload({
-                                url: '/upload', //upload.php script, node.js route, or servlet url
+                                url: '/api/' + $scope.dataUrl, //upload.php script, node.js route, or servlet url
                                 method: 'POST',
                                 // headers: {'headerKey': 'headerValue'}, withCredential: true,
                                 //data: { Name: $scope.object['Name']},
@@ -149,15 +167,11 @@
                                 console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
                                 $scope.uploadPercent = parseInt(100.0 * evt.loaded / evt.total);
                             }).success(function (data, status, headers, config) {
-                                $scope.isUploading = false;
-                                // file is uploaded successfully
 
+                                $scope.isUploading = false;
                                 $scope.object['Url'] = data;
-                                $scope.addObject();
-                                $scope.getData('');
-                                $scope.toggleAddMode();
+                                $scope.getData();
                                 notificationFactory.success("File " + data + " was uploaded successfully.");
-                                //console.log($scope.object['Upload']);
                             });
                             //.error(...)
                             //.then(success, error, progress); 
@@ -186,7 +200,7 @@
 
     angularFileUploadGrid.factory('crudGridDataFactory', ['$http', '$resource', function ($http, $resource) {
         return function (type) {
-            return $resource('/' + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: false } });
+            return $resource('/api/' + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: false } });
         };
     }]);
 
@@ -200,5 +214,4 @@
             }
         };
     });
-
 })();

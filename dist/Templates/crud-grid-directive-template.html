@@ -1,12 +1,11 @@
-﻿<div ng-show="loading">Loading...</div>
-<div class="input-group col-md-5 row filter">
+<div ng-show="loading">Loading...</div>
+<div class="input-group col-sm-12 row filter">
     <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
     <input type="text" class="form-control" ng-model="filter">
     <span class="input-group-addon btn btn-default" ng-disabled="filter.length == 0" ng-click="filter = ''"><i class="glyphicon glyphicon-remove"></i></span>
 </div>
 
-<div ng-file-drop-available="dropSupported=true" ng-file-drop="onFileSelect($files);" ng-show="dropSupported">
-                AngularJS CRUD File-Upload Grid
+<div class="col-sm-12 row" ng-file-drop-available="dropSupported=true" ng-file-drop="onFileSelect($files);" ng-show="dropSupported">
 <table class="crud-grid table table-striped table-bordered table-condensed table-hover">
     <tr>
         <th class="col-md-1">
@@ -50,7 +49,7 @@
         <td ng-repeat="column in columns" ng-switch on="object.editMode" >
             <div ng-switch-default ng-switch on="!column.lookup" ng-click="toggleEditMode(object)">
                 <span ng-switch-default>{{object[column.name]}}</span>
-                <span ng-switch-when="false">{{ object[column.lookup.table][column.lookup.value]}}</span>
+                <span ng-switch-when="false">{{object[column.lookup.table][column.lookup.value]}}</span>
             </div>
             <div ng-switch-when="true" ng-switch on="!column.lookup">
                 <input ng-switch-default ng-model="object[column.name]" model-change-blur ng-disabled="column.autoincrement" class="form-control" />
