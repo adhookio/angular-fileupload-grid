@@ -50,13 +50,11 @@
                     $scope.tippColumns = "";     
 
                     $attrs.$observe('table', function (newValue) {
-                        console.log(newValue);
                         $scope.dataUrl = newValue;
                         $scope.getData('');
                     });
 
                     $attrs.$observe('columns', function(newValue) {
-                        console.log("columns: " + newValue);
                         if(newValue !== undefined && newValue != "")
                         {
                             $scope.columns = angular.fromJson($attrs.columns);
@@ -64,17 +62,14 @@
                     });
 
                     $attrs.$observe('useFileUpload', function(newValue) {
-                        console.log("useFileUpload - " + angular.fromJson($attrs.useFileUpload));
                         $scope.useFileUpload = angular.fromJson($attrs.useFileUpload);
                     });
 
                     $attrs.$observe('canOpenChildGrid', function(newValue) {
-                        console.log("canOpenChildGrid - " + angular.fromJson($attrs.canOpenChildGrid));
                         $scope.canOpenChildGrid = angular.fromJson($attrs.canOpenChildGrid);
                     });
 
                     $attrs.$observe('childCols', function(newValue) {
-                        console.log("childcols: " + newValue);
                         $scope.tippColumns = newValue;
                     });
 
@@ -120,7 +115,6 @@
                     };
 
                     $scope.toggleAddMode = function () {
-                        console.log("Add Mode");
                         $scope.addMode = !$scope.addMode;
                         $scope.object = {};
                     };
@@ -130,7 +124,6 @@
                     };
 
                     var successCallback = function (e, cb) {
-                        //notificationFactory.success();
                         if($scope.dataUrl)
                         {
                             $scope.$broadcast('lookupDataChange', [$scope.dataUrl]);
@@ -153,7 +146,6 @@
                     };
 
                     $scope.addObject = function () {
-                        console.log('add object url: ' + $scope.object['Url']);
                         if($scope.dataUrl)
                         {
                             crudGridDataFactory($scope.dataUrl).save($scope.object, successPostCallback, errorCallback);
@@ -168,9 +160,6 @@
                     };
 
                     $scope.openUploadDialog = function(object) {
-                          console.log(object);
-                          console.log($scope.dataUrl);
-
                           ModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'url', 'tippColumns'];
 
                           var modalInstance = $modal.open({
@@ -182,7 +171,6 @@
                               },
                               tippColumns: function() {
                                 var columns = $scope.tippColumns;
-                                console.log("returning tippColumns: " + $scope.tippColumns);
                                 return columns;
                               }
                             }
@@ -190,9 +178,6 @@
                     };
 
                     var ModalInstanceCtrl = function ($scope, $modalInstance, url, tippColumns) {
-                        console.log("tippColumns:" + tippColumns);
-                        console.log("url: " + url);
-
                         $scope.uploadUrl = url;
                         $scope.uploadColumns = tippColumns;
                     };
