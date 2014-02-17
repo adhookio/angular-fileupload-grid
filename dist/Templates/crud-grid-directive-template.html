@@ -1,14 +1,14 @@
 <div ng-show="loading">Loading...</div>
-<div class="input-group col-sm-12 row filter">
+<div class="input-group row filter">
     <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
     <input type="text" class="form-control" ng-model="filter">
     <span class="input-group-addon btn btn-default" ng-disabled="filter.length == 0" ng-click="filter = ''"><i class="glyphicon glyphicon-remove"></i></span>
 </div>
 
-<div class="col-sm-12 row" ng-file-drop-available="dropSupported=true" ng-file-drop="onFileSelect($files);" ng-show="dropSupported">
+<div ng-file-drop-available="dropSupported=true" ng-file-drop="onFileSelect($files);" ng-show="true">
 <table class="crud-grid table table-striped table-bordered table-condensed table-hover">
     <tr>
-        <th class="col-md-1">
+        <th class="col-md-3">
             <div class="btn-toolbar"><i class="btn btn-default glyphicon" ng-class="{'glyphicon-minus': addMode, 'glyphicon-plus': !addMode}" ng-click="toggleAddMode()"></i></div>
         </th>
 
@@ -39,6 +39,7 @@
                 <div class="btn-group" ng-switch-default>
                     <i class="btn btn-default glyphicon glyphicon-edit" ng-click="toggleEditMode(object)"></i>
                     <i class="btn btn-default glyphicon glyphicon-trash" ng-click="deleteObject(object)"></i>
+                    <i class="btn btn-default glyphicon glyphicon-upload" ng-click="openUploadDialog(object)" ng-show="canOpenChildGrid"></i>
                 </div>
                 <div class="btn-group" ng-switch-when="true">
                     <i class="btn btn-default glyphicon glyphicon-save" ng-click="updateObject(object);toggleEditMode(object);"></i>

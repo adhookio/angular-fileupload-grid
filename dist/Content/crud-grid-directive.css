@@ -40,18 +40,6 @@ input[multiple] {
 	padding-bottom: 5px; 
 }
 
-.progress {
-	display: inline-block;
-	width: 100px;	
-	border: 3px groove #CCC;
-}
-
-.progress div {
-	font-size: smaller;
-	background: orange;
-	width: 0;
-}
-
 .drop-box {
 	background: #F8F8F8;
 	border: 5px dashed #DDD;

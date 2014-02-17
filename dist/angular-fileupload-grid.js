@@ -1,21 +1,43 @@
 ﻿(function() {
 
-    var angularFileUploadGrid = angular.module('angularFileUploadGrid', ['ngResource', 'angularFileUpload']);
+    var angularFileUploadGrid = angular.module('angularFileUploadGrid', ['ngResource', 'angularFileUpload', 'ui.bootstrap']);
+
+   angularFileUploadGrid.provider("CrudGridConfiguration", function() {
+            this.configurationProvider = {};
+
+            this.$get = function() {
+                var configurationProvider = this.configurationProvider;
+
+                return {
+                    configuration: function() {
+                        return configurationProvider;
+                    }
+                };
+            };
+
+            this.setConfiguration = function(configuration) {
+                this.configurationProvider = configuration;
+            };
+        });
 
     angularFileUploadGrid.directive('crudGrid', function () {
         return {
             restrict: 'A',
             replace: false,
             scope: {
-                "table" : "@"
+                "table" : "@",
+                "columns" : "@",
+                "useFileUpload" : "@",
+                "canOpenChildGrid" : "@",
+                "childCols" : "@"
             },
-            templateUrl: '/app/components/angular-fileupload-grid/dist/Templates/crud-grid-directive-template.html',
-            controller: ['$scope', '$element', '$attrs', '$upload', 'crudGridDataFactory', 'notificationFactory',
-                function ($scope, $element, $attrs, $upload, crudGridDataFactory, notificationFactory) {
+            templateUrl: 'components/angular-fileupload-grid/dist/Templates/crud-grid-directive-template.html',
+            controller: ['$scope', '$element', '$attrs', '$upload', 'crudGridDataFactory', '$modal', 'CrudGridConfiguration',
+                function ($scope, $element, $attrs, $upload, crudGridDataFactory, $modal, CrudGridConfiguration) {
                     $scope.objects = [];
                     $scope.lookups = [];
                     $scope.object = {};
-                    $scope.columns = angular.fromJson($attrs.columns);
+                    $scope.columns = "";
                     $scope.addMode = false;
                     $scope.orderBy = { field: 'Name', asc: true };
                     $scope.loading = false;
@@ -23,10 +45,37 @@
                     $scope.isUploading = false;
                     $scope.uploadPercent = 0;
                     $scope.dataUrl = "";
-                  
+                    $scope.useFileUpload = false;
+                    $scope.canOpenChildGrid = false;     
+                    $scope.tippColumns = "";     
+
                     $attrs.$observe('table', function (newValue) {
+                        console.log(newValue);
                         $scope.dataUrl = newValue;
                         $scope.getData('');
+                    });
+
+                    $attrs.$observe('columns', function(newValue) {
+                        console.log("columns: " + newValue);
+                        if(newValue !== undefined && newValue != "")
+                        {
+                            $scope.columns = angular.fromJson($attrs.columns);
+                        }
+                    });
+
+                    $attrs.$observe('useFileUpload', function(newValue) {
+                        console.log("useFileUpload - " + angular.fromJson($attrs.useFileUpload));
+                        $scope.useFileUpload = angular.fromJson($attrs.useFileUpload);
+                    });
+
+                    $attrs.$observe('canOpenChildGrid', function(newValue) {
+                        console.log("canOpenChildGrid - " + angular.fromJson($attrs.canOpenChildGrid));
+                        $scope.canOpenChildGrid = angular.fromJson($attrs.canOpenChildGrid);
+                    });
+
+                    $attrs.$observe('childCols', function(newValue) {
+                        console.log("childcols: " + newValue);
+                        $scope.tippColumns = newValue;
                     });
 
                     $scope.setLookupData = function () {
@@ -118,6 +167,36 @@
                         }
                     };
 
+                    $scope.openUploadDialog = function(object) {
+                          console.log(object);
+                          console.log($scope.dataUrl);
+
+                          ModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'url', 'tippColumns'];
+
+                          var modalInstance = $modal.open({
+                            templateUrl: 'components/angular-fileupload-grid/dist/Templates/upload-dialog.html',
+                            controller: ModalInstanceCtrl,
+                            resolve: {
+                              url: function () {
+                                return $scope.dataUrl + "/" + object.Id + "/files";
+                              },
+                              tippColumns: function() {
+                                var columns = $scope.tippColumns;
+                                console.log("returning tippColumns: " + $scope.tippColumns);
+                                return columns;
+                              }
+                            }
+                          });
+                    };
+
+                    var ModalInstanceCtrl = function ($scope, $modalInstance, url, tippColumns) {
+                        console.log("tippColumns:" + tippColumns);
+                        console.log("url: " + url);
+
+                        $scope.uploadUrl = url;
+                        $scope.uploadColumns = tippColumns;
+                    };
+
                     $scope.updateObject = function (object) {
                         if($scope.dataUrl)
                         {
@@ -148,38 +227,46 @@
                         });
 
                     $scope.onFileSelect = function ($files) {
-                        $scope.isUploading = true;
-                        //$files: an array of files selected, each file has name, size, and type.
-                        for (var i = 0; i < $files.length; i++) {
-                            var file = $files[i];
-                            $scope.upload = $upload.upload({
-                                url: '/api/' + $scope.dataUrl, //upload.php script, node.js route, or servlet url
-                                method: 'POST',
-                                // headers: {'headerKey': 'headerValue'}, withCredential: true,
-                                //data: { Name: $scope.object['Name']},
-                                file: file,
-                                // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
-                                /* set file formData name for 'Content-Desposition' header. Default: 'file' */
-                                //fileFormDataName: myFile,
-                                /* customize how data is added to formData. See #40#issuecomment-28612000 for example */
-                                //formDataAppender: function(formData, key, val){} 
-                            }).progress(function (evt) {
-                                console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-                                $scope.uploadPercent = parseInt(100.0 * evt.loaded / evt.total);
-                            }).success(function (data, status, headers, config) {
-
-                                $scope.isUploading = false;
-                                $scope.object['Url'] = data;
-                                $scope.getData();
-                                notificationFactory.success("File " + data + " was uploaded successfully.");
-                            });
-                            //.error(...)
-                            //.then(success, error, progress); 
+                        if($scope.useFileUpload)
+                        {
+                            $scope.isUploading = true;
+                            //$files: an array of files selected, each file has name, size, and type.
+                            for (var i = 0; i < $files.length; i++) {
+                                var file = $files[i];
+                                console.log(file);
+                                toastr.info('Uploading ' + file.name + '...');
+                                $scope.upload = $upload.upload({
+                                    url: CrudGridConfiguration.configuration().urlPrefix + $scope.dataUrl, //upload.php script, node.js route, or servlet url
+                                    method: 'POST',
+                                    // headers: {'headerKey': 'headerValue'}, withCredential: true,
+                                    //data: { Name: $scope.object['Name']},
+                                    file: file,
+                                    // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
+                                    /* set file formData name for 'Content-Desposition' header. Default: 'file' */
+                                    //fileFormDataName: myFile,
+                                    /* customize how data is added to formData. See #40#issuecomment-28612000 for example */
+                                    //formDataAppender: function(formData, key, val){} 
+                                }).progress(function (evt) {
+                                    console.log(evt);
+                                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                                    $scope.uploadPercent = parseInt(100.0 * evt.loaded / evt.total);
+                                    toastr.info($scope.uploadPercent + "%");
+                                }).success(function (data, status, headers, config) {
+                                    $scope.isUploading = false;
+                                    $scope.object['Url'] = data;
+                                    $scope.getData();
+                                    toastr.success("File " + data + " was uploaded successfully.");
+                                });
+                                //.error(...)
+                                //.then(success, error, progress); 
+                            }
                         }
                     };
                 }]
         };
     });
+
+
 
     angularFileUploadGrid.directive('modelChangeBlur', function () {
         return {
@@ -198,20 +285,9 @@
         };
     });
 
-    angularFileUploadGrid.factory('crudGridDataFactory', ['$http', '$resource', function ($http, $resource) {
+    angularFileUploadGrid.factory('crudGridDataFactory', ['$http', '$resource', 'CrudGridConfiguration', function ($http, $resource, CrudGridConfiguration) {
         return function (type) {
-            return $resource('/api/' + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: false } });
+            return $resource(CrudGridConfiguration.configuration().urlPrefix + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: false } });
         };
     }]);
-
-    angularFileUploadGrid.factory('notificationFactory', function () {
-        return {
-            success: function (text) {
-                toastr.success(text);
-            },
-            error: function (text) {
-                toastr.error(text, "Error");
-            }
-        };
-    });
 })();
