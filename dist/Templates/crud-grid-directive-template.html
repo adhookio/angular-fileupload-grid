@@ -1,62 +1,67 @@
-<div ng-show="loading">Loading...</div>
-<div class="input-group row filter">
-    <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
-    <input type="text" class="form-control" ng-model="filter">
-    <span class="input-group-addon btn btn-default" ng-disabled="filter.length == 0" ng-click="filter = ''"><i class="glyphicon glyphicon-remove"></i></span>
-</div>
+    <div ng-show="loading">Loading...</div>
+    <div class="input-group row filter">
+        <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
+        <input type="text" class="form-control" ng-model="filter">
+        <span class="input-group-addon btn btn-default" ng-disabled="filter.length == 0" ng-click="filter = ''"><i class="glyphicon glyphicon-remove"></i></span>
+    </div>
+    <br/>
 
-<div ng-file-drop-available="dropSupported=true" ng-file-drop="onFileSelect($files);" ng-show="true">
-<table class="crud-grid table table-striped table-bordered table-condensed table-hover">
-    <tr>
-        <th class="col-md-3">
-            <div class="btn-toolbar"><i class="btn btn-default glyphicon" ng-class="{'glyphicon-minus': addMode, 'glyphicon-plus': !addMode}" ng-click="toggleAddMode()"></i></div>
-        </th>
+    <div ng-file-drop-available="dropSupported=true" ng-file-drop="onFileSelect($files);" ng-show="true">
+    <table class="crud-grid table table-striped table-bordered table-condensed table-hover">
+        <tr>
+            <th class="col-lg-1">
+                <div class="btn-toolbar"><i class="btn btn-default glyphicon" ng-class="{'glyphicon-minus': addMode, 'glyphicon-plus': !addMode}" ng-click="toggleAddMode()"></i></div>
+            </th>
 
-        <th ng-repeat="column in columns" ng-class="column.class" ng-click="setOrderBy(column.name)">
-            <div>
-                {{column.header || column.name}}
-                <i class="glyphicon" ng-class="{'glyphicon-sort-by-alphabet': orderBy.asc, 'glyphicon-sort-by-alphabet-alt': !orderBy.asc}" ng-show="orderBy.field == '{{column.name}}'"></i>
-            </div>
-        </th>
-    </tr>
-    <tr ng-show="addMode">
-        <td>
-            <div class="btn-toolbar">
-                <div class="btn-group">
-                    <i class="btn btn-default glyphicon glyphicon-save" ng-click="addObject()"></i>
-                    <i class="btn btn-default glyphicon glyphicon-remove" ng-click="toggleAddMode()"></i>
+            <th ng-repeat="column in columns" ng-class="column.class" ng-click="setOrderBy(column.name)">
+                <div>
+                    {{column.header || column.name}}
+                    <i class="glyphicon" ng-class="{'glyphicon-sort-by-alphabet': orderBy.asc, 'glyphicon-sort-by-alphabet-alt': !orderBy.asc}" ng-show="orderBy.field == '{{column.name}}'"></i>
                 </div>
-            </div>
-        </td>
-        <td ng-repeat="column in columns" ng-switch="!column.lookup">
-            <input ng-switch-default ng-model="object[column.name]" ng-disabled="column.autoincrement" class="form-control"/>
-            <select ng-switch-when="false" ng-options="l[column.lookup.key] as l[column.lookup.value] for l in getLookupData(column.lookup.table) | orderBy: column.lookup.orderBy.field:!column.lookup.orderBy.asc" ng-show="column.lookup" ng-model="object[column.name]" class="form-control"></select>
-        </td>
-    </tr>
-    <tr ng-repeat="object in objects | orderBy:orderBy.field:!orderBy.asc | filter: filter">
-        <td>
-            <div class="btn-toolbar" ng-switch on="object.editMode">
-                <div class="btn-group" ng-switch-default>
-                    <i class="btn btn-default glyphicon glyphicon-edit" ng-click="toggleEditMode(object)"></i>
-                    <i class="btn btn-default glyphicon glyphicon-trash" ng-click="deleteObject(object)"></i>
-                    <i class="btn btn-default glyphicon glyphicon-upload" ng-click="openUploadDialog(object)" ng-show="canOpenChildGrid"></i>
+            </th>
+        </tr>
+        <tr ng-show="addMode">
+            <td>
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <i class="btn btn-default glyphicon glyphicon-save" ng-click="addObject()"></i>
+                        <i class="btn btn-default glyphicon glyphicon-remove" ng-click="toggleAddMode()"></i>
+                    </div>
                 </div>
-                <div class="btn-group" ng-switch-when="true">
-                    <i class="btn btn-default glyphicon glyphicon-save" ng-click="updateObject(object);toggleEditMode(object);"></i>
-                    <i class="btn btn-default glyphicon glyphicon-remove" ng-click="toggleEditMode(object)"></i>
+            </td>
+            <td ng-repeat="column in columns" ng-switch="!column.lookup">
+                <input ng-switch-default ng-model="object[column.name]" ng-disabled="column.autoincrement" class="form-control"/>
+                <select ng-switch-when="false" ng-options="l[column.lookup.key] as l[column.lookup.value] for l in getLookupData(column.lookup.table) | orderBy: column.lookup.orderBy.field:!column.lookup.orderBy.asc" ng-show="column.lookup" ng-model="object[column.name]" class="form-control"></select>
+            </td>
+        </tr>
+        <tr ng-repeat="object in objects | orderBy:orderBy.field:!orderBy.asc | filter: filter">
+            <td>
+                <div class="btn-toolbar" ng-switch on="object.editMode">
+                    <div class="btn-group" ng-switch-default>
+                        <i class="btn btn-default glyphicon glyphicon-edit" ng-click="toggleEditMode(object)"></i>
+                        <i class="btn btn-default glyphicon glyphicon-trash" ng-click="deleteObject(object)"></i>
+                        <i class="btn btn-default glyphicon glyphicon-upload" ng-click="openUploadDialog(object)" ng-show="canOpenChildGrid"></i>
+                        <i class="btn btn-default" ng-repeat="action in actions" ng-class="action.icon" ng-click="clickCommand(action.command, object);"></i>
+                    </div>
+                    <div class="btn-group" ng-switch-when="true">
+                        <i class="btn btn-default glyphicon glyphicon-save" ng-click="updateObject(object);toggleEditMode(object);"></i>
+                        <i class="btn btn-default glyphicon glyphicon-remove" ng-click="toggleEditMode(object)"></i>
+                    </div>
                 </div>
-            </div>
-        </td>
-        <td ng-repeat="column in columns" ng-switch on="object.editMode" >
-            <div ng-switch-default ng-switch on="!column.lookup" ng-click="toggleEditMode(object)">
-                <span ng-switch-default>{{object[column.name]}}</span>
-                <span ng-switch-when="false">{{object[column.lookup.table][column.lookup.value]}}</span>
-            </div>
-            <div ng-switch-when="true" ng-switch on="!column.lookup">
-                <input ng-switch-default ng-model="object[column.name]" model-change-blur ng-disabled="column.autoincrement" class="form-control" />
-                <select ng-switch-when="false" ng-options="l[column.lookup.key] as l[column.lookup.value] for l in getLookupData(column.lookup.table) | orderBy: column.lookup.orderBy.field:!column.lookup.orderBy.asc" ng-model="object[column.name]" class="form-control"></select>
-            </div>
-        </td>
-    </tr>
-</table>
-</div>
+            </td>
+            <td ng-repeat="column in columns" ng-switch on="object.editMode">
+                <div ng-model="column.name" />
+                <div ng-switch-default ng-switch on="!column.lookup" ng-click="toggleEditMode(object)">
+                    <span ng-switch-default>{{object[column.name]}}</span>
+                    <span ng-switch-when="false">{{object[column.lookup.table][column.lookup.value]}}</span>
+                </div>
+
+                <div ng-switch-when="true" ng-switch on="!column.lookup">
+                    <input ng-switch-default ng-model="object[column.name]" model-change-blur ng-disabled="column.autoincrement" class="form-control" />
+                    <span ng-model="column.lookup.table" />
+                    <select ng-switch-when="false" ng-options="l[column.lookup.key] as l[column.lookup.value] for l in getLookupData(column.lookup.table) | orderBy: column.lookup.orderBy.field:!column.lookup.orderBy.asc" ng-model="object[column.name]" class="form-control"></select>
+                </div>
+            </td>
+        </tr>
+    </table>
+    </div>

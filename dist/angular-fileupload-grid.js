@@ -1,4 +1,4 @@
-﻿(function() {
+(function() {
 
     var angularFileUploadGrid = angular.module('angularFileUploadGrid', ['ngResource', 'angularFileUpload', 'ui.bootstrap']);
 
@@ -27,6 +27,7 @@
             scope: {
                 "table" : "@",
                 "columns" : "@",
+                "actions" : "@",
                 "useFileUpload" : "@",
                 "canOpenChildGrid" : "@",
                 "childCols" : "@"
@@ -38,6 +39,7 @@
                     $scope.lookups = [];
                     $scope.object = {};
                     $scope.columns = "";
+                    $scope.actions = "";
                     $scope.addMode = false;
                     $scope.orderBy = { field: 'Name', asc: true };
                     $scope.loading = false;
@@ -52,12 +54,21 @@
                     $attrs.$observe('table', function (newValue) {
                         $scope.dataUrl = newValue;
                         $scope.getData('');
+                        console.log("Table has a new Value " + newValue);
                     });
 
                     $attrs.$observe('columns', function(newValue) {
                         if(newValue !== undefined && newValue != "")
                         {
                             $scope.columns = angular.fromJson($attrs.columns);
+                            $scope.setLookupData();
+                        }
+                    });
+
+                    $attrs.$observe('actions', function(newValue) {
+                        if(newValue !== undefined && newValue != "")
+                        {
+                            $scope.actions = angular.fromJson($attrs.actions);
                         }
                     });
 
@@ -70,17 +81,34 @@
                     });
 
                     $attrs.$observe('childCols', function(newValue) {
+                        console.log("new value childCols " + newValue);
                         $scope.tippColumns = newValue;
                     });
 
                     $scope.setLookupData = function () {
                         for (var i = 0; i < $scope.columns.length; i++) {
+                            (function(i){
                             var c = $scope.columns[i];
                             if (c.lookup && !$scope.hasLookupData(c.lookup.table)) {
-                                crudGridDataFactory(c.lookup.table).query(function (data) {
-                                    $scope.setIndividualLookupData(c.lookup.table, data);
+                                console.log("get lookup data " + c.lookup.table);
+                                crudGridDataFactory(c.lookup.table).query(function (data, responseHeader, type) {
+                                    console.log("query success " + $scope.columns[i].lookup.table);
+                                    console.log(data);
+                                    console.log(responseHeader);
+                                    console.log(type);
+
+                                    if(c.lookup)
+                                    {
+                                        $scope.setIndividualLookupData($scope.columns[i].lookup.table, data);
+                                    }
+                                }, function(result){
+                                    console.log("query failed " + c.lookup.table);
                                 });
                             }
+
+                            })(i);
+
+                     
                         }
                     };
 
@@ -90,6 +118,9 @@
                     };
 
                     $scope.getLookupData = function (table) {
+                        console.log("getLookupData " + table);
+                        console.log($scope.lookups[table.toLowerCase()]);
+
                         return typeof table == 'undefined' ? null : $scope.lookups[table.toLowerCase()];
                     };
 
@@ -98,6 +129,7 @@
                     };
 
                     $scope.hasLookupData = function (table) {
+                        console.log("hasLookupData " + table);
                         return !$.isEmptyObject($scope.getLookupData(table));
                     };
 
@@ -110,6 +142,8 @@
                                     return data[i][lookup.value];
                             }
                         }
+
+                        console.log(data);
 
                         return '';
                     };
@@ -138,6 +172,8 @@
                     };
 
                     $scope.$on('lookupDataChange', function (scope, table) {
+                        console.log('lookupdata change');
+                        console.log(table);
                         $scope.resetLookupData(table[0]);
                     });
 
@@ -170,6 +206,7 @@
                                 return $scope.dataUrl + "/" + object.Id + "/files";
                               },
                               tippColumns: function() {
+                                console.log("tippColumns");
                                 var columns = $scope.tippColumns;
                                 return columns;
                               }
@@ -210,6 +247,11 @@
                             $scope.setLookupData();
                             $scope.loading = false;
                         });
+
+                    $scope.clickCommand = function(command, object) {
+                        console.log("RUN_COMMAND [ " + command + " ] on object [ " + object.Id + " ]");
+                        $scope.$emit("RUN_COMMAND", command, object);
+                    };
 
                     $scope.onFileSelect = function ($files) {
                         if($scope.useFileUpload)
@@ -272,7 +314,9 @@
 
     angularFileUploadGrid.factory('crudGridDataFactory', ['$http', '$resource', 'CrudGridConfiguration', function ($http, $resource, CrudGridConfiguration) {
         return function (type) {
-            return $resource(CrudGridConfiguration.configuration().urlPrefix + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: false } });
+            console.log("loading " + type);
+            console.log("loading " + CrudGridConfiguration.configuration().urlPrefix + type);
+            return $resource(CrudGridConfiguration.configuration().urlPrefix + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: true } }, type);
         };
     }]);
 })();
