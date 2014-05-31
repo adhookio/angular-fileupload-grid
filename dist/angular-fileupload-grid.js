@@ -1,4 +1,4 @@
-﻿(function() {
+(function() {
 
     var angularFileUploadGrid = angular.module('angularFileUploadGrid', ['ngResource', 'angularFileUpload', 'ui.bootstrap']);
 
@@ -27,17 +27,19 @@
             scope: {
                 "table" : "@",
                 "columns" : "@",
+                "actions" : "@",
                 "useFileUpload" : "@",
                 "canOpenChildGrid" : "@",
                 "childCols" : "@"
             },
             templateUrl: 'components/angular-fileupload-grid/dist/Templates/crud-grid-directive-template.html',
-            controller: ['$scope', '$element', '$attrs', '$upload', 'crudGridDataFactory', 'notificationFactory', '$modal', 'CrudGridConfiguration',
-                function ($scope, $element, $attrs, $upload, crudGridDataFactory, notificationFactory, $modal, CrudGridConfiguration) {
+            controller: ['$scope', '$element', '$attrs', '$upload', 'crudGridDataFactory', '$modal', 'CrudGridConfiguration',
+                function ($scope, $element, $attrs, $upload, crudGridDataFactory, $modal, CrudGridConfiguration) {
                     $scope.objects = [];
                     $scope.lookups = [];
                     $scope.object = {};
                     $scope.columns = "";
+                    $scope.actions = "";
                     $scope.addMode = false;
                     $scope.orderBy = { field: 'Name', asc: true };
                     $scope.loading = false;
@@ -50,42 +52,63 @@
                     $scope.tippColumns = "";     
 
                     $attrs.$observe('table', function (newValue) {
-                        console.log(newValue);
                         $scope.dataUrl = newValue;
                         $scope.getData('');
+                        console.log("Table has a new Value " + newValue);
                     });
 
                     $attrs.$observe('columns', function(newValue) {
-                        console.log("columns: " + newValue);
                         if(newValue !== undefined && newValue != "")
                         {
                             $scope.columns = angular.fromJson($attrs.columns);
+                            $scope.setLookupData();
+                        }
+                    });
+
+                    $attrs.$observe('actions', function(newValue) {
+                        if(newValue !== undefined && newValue != "")
+                        {
+                            $scope.actions = angular.fromJson($attrs.actions);
                         }
                     });
 
                     $attrs.$observe('useFileUpload', function(newValue) {
-                        console.log("useFileUpload - " + angular.fromJson($attrs.useFileUpload));
                         $scope.useFileUpload = angular.fromJson($attrs.useFileUpload);
                     });
 
                     $attrs.$observe('canOpenChildGrid', function(newValue) {
-                        console.log("canOpenChildGrid - " + angular.fromJson($attrs.canOpenChildGrid));
                         $scope.canOpenChildGrid = angular.fromJson($attrs.canOpenChildGrid);
                     });
 
                     $attrs.$observe('childCols', function(newValue) {
-                        console.log("childcols: " + newValue);
+                        console.log("new value childCols " + newValue);
                         $scope.tippColumns = newValue;
                     });
 
                     $scope.setLookupData = function () {
                         for (var i = 0; i < $scope.columns.length; i++) {
+                            (function(i){
                             var c = $scope.columns[i];
                             if (c.lookup && !$scope.hasLookupData(c.lookup.table)) {
-                                crudGridDataFactory(c.lookup.table).query(function (data) {
-                                    $scope.setIndividualLookupData(c.lookup.table, data);
+                                console.log("get lookup data " + c.lookup.table);
+                                crudGridDataFactory(c.lookup.table).query(function (data, responseHeader, type) {
+                                    console.log("query success " + $scope.columns[i].lookup.table);
+                                    console.log(data);
+                                    console.log(responseHeader);
+                                    console.log(type);
+
+                                    if(c.lookup)
+                                    {
+                                        $scope.setIndividualLookupData($scope.columns[i].lookup.table, data);
+                                    }
+                                }, function(result){
+                                    console.log("query failed " + c.lookup.table);
                                 });
                             }
+
+                            })(i);
+
+                     
                         }
                     };
 
@@ -95,6 +118,9 @@
                     };
 
                     $scope.getLookupData = function (table) {
+                        console.log("getLookupData " + table);
+                        console.log($scope.lookups[table.toLowerCase()]);
+
                         return typeof table == 'undefined' ? null : $scope.lookups[table.toLowerCase()];
                     };
 
@@ -103,6 +129,7 @@
                     };
 
                     $scope.hasLookupData = function (table) {
+                        console.log("hasLookupData " + table);
                         return !$.isEmptyObject($scope.getLookupData(table));
                     };
 
@@ -116,11 +143,12 @@
                             }
                         }
 
+                        console.log(data);
+
                         return '';
                     };
 
                     $scope.toggleAddMode = function () {
-                        console.log("Add Mode");
                         $scope.addMode = !$scope.addMode;
                         $scope.object = {};
                     };
@@ -130,7 +158,6 @@
                     };
 
                     var successCallback = function (e, cb) {
-                        //notificationFactory.success();
                         if($scope.dataUrl)
                         {
                             $scope.$broadcast('lookupDataChange', [$scope.dataUrl]);
@@ -145,6 +172,8 @@
                     };
 
                     $scope.$on('lookupDataChange', function (scope, table) {
+                        console.log('lookupdata change');
+                        console.log(table);
                         $scope.resetLookupData(table[0]);
                     });
 
@@ -153,7 +182,6 @@
                     };
 
                     $scope.addObject = function () {
-                        console.log('add object url: ' + $scope.object['Url']);
                         if($scope.dataUrl)
                         {
                             crudGridDataFactory($scope.dataUrl).save($scope.object, successPostCallback, errorCallback);
@@ -163,14 +191,11 @@
                     $scope.deleteObject = function (object) {
                         if($scope.dataUrl)
                         {
-                            crudGridDataFactory($scope.dataUrl).delete({ id: object.Id }, successCallback, errorCallback);
+                            $scope.openDeleteDialog(object);
                         }
                     };
 
                     $scope.openUploadDialog = function(object) {
-                          console.log(object);
-                          console.log($scope.dataUrl);
-
                           ModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'url', 'tippColumns'];
 
                           var modalInstance = $modal.open({
@@ -181,18 +206,50 @@
                                 return $scope.dataUrl + "/" + object.Id + "/files";
                               },
                               tippColumns: function() {
+                                console.log("tippColumns");
                                 var columns = $scope.tippColumns;
-                                console.log("returning tippColumns: " + $scope.tippColumns);
                                 return columns;
                               }
                             }
                           });
                     };
 
-                    var ModalInstanceCtrl = function ($scope, $modalInstance, url, tippColumns) {
-                        console.log("tippColumns:" + tippColumns);
-                        console.log("url: " + url);
+                     var DeleteModalInstanceCtrl = function($scope, $modalInstance, id, url) {
+                        $scope.Id = id;
+                        $scope.Url = url;
+                        console.log(url);
 
+                        $scope.delete = function() {
+                            crudGridDataFactory(url).delete({ id: $scope.Id }, successCallback, errorCallback);
+                            $modalInstance.close();
+                        };
+
+                        $scope.cancel = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.openDeleteDialog = function(object) {
+                          console.log(object);
+                          console.log($scope.dataUrl);
+
+                          DeleteModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'id', 'url'];
+
+                          var modalInstance = $modal.open({
+                            templateUrl: 'components/angular-fileupload-grid/dist/Templates/delete-dialog.html',
+                            controller: DeleteModalInstanceCtrl,
+                            resolve: {
+                              id : function() {
+                                return object.Id;
+                              },
+                              url : function() {
+                                return $scope.dataUrl;
+                              }
+                            }
+                          });
+                    };
+
+                    var ModalInstanceCtrl = function ($scope, $modalInstance, url, tippColumns) {
                         $scope.uploadUrl = url;
                         $scope.uploadColumns = tippColumns;
                     };
@@ -226,6 +283,11 @@
                             $scope.loading = false;
                         });
 
+                    $scope.clickCommand = function(command, object) {
+                        console.log("RUN_COMMAND [ " + command + " ] on object [ " + object.Id + " ]");
+                        $scope.$emit("RUN_COMMAND", command, object);
+                    };
+
                     $scope.onFileSelect = function ($files) {
                         if($scope.useFileUpload)
                         {
@@ -233,6 +295,8 @@
                             //$files: an array of files selected, each file has name, size, and type.
                             for (var i = 0; i < $files.length; i++) {
                                 var file = $files[i];
+                                console.log(file);
+                                toastr.info('Uploading ' + file.name + '...');
                                 $scope.upload = $upload.upload({
                                     url: CrudGridConfiguration.configuration().urlPrefix + $scope.dataUrl, //upload.php script, node.js route, or servlet url
                                     method: 'POST',
@@ -245,14 +309,15 @@
                                     /* customize how data is added to formData. See #40#issuecomment-28612000 for example */
                                     //formDataAppender: function(formData, key, val){} 
                                 }).progress(function (evt) {
+                                    console.log(evt);
                                     console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
                                     $scope.uploadPercent = parseInt(100.0 * evt.loaded / evt.total);
+                                    toastr.info($scope.uploadPercent + "%");
                                 }).success(function (data, status, headers, config) {
-
                                     $scope.isUploading = false;
                                     $scope.object['Url'] = data;
                                     $scope.getData();
-                                    notificationFactory.success("File " + data + " was uploaded successfully.");
+                                    toastr.success("File " + data + " was uploaded successfully.");
                                 });
                                 //.error(...)
                                 //.then(success, error, progress); 
@@ -284,18 +349,9 @@
 
     angularFileUploadGrid.factory('crudGridDataFactory', ['$http', '$resource', 'CrudGridConfiguration', function ($http, $resource, CrudGridConfiguration) {
         return function (type) {
-            return $resource(CrudGridConfiguration.configuration().urlPrefix + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: false } });
+            console.log("loading " + type);
+            console.log("loading " + CrudGridConfiguration.configuration().urlPrefix + type);
+            return $resource(CrudGridConfiguration.configuration().urlPrefix + type + '/:id', { id: '@id' }, { 'update': { method: 'PUT' } }, { 'query': { method: 'GET', isArray: true } }, type);
         };
     }]);
-
-    angularFileUploadGrid.factory('notificationFactory', function () {
-        return {
-            success: function (text) {
-                toastr.success(text);
-            },
-            error: function (text) {
-                toastr.error(text, "Error");
-            }
-        };
-    });
 })();
