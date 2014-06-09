@@ -27,10 +27,10 @@ Usage
 
 **Parameters**
 
- * class: The style of your div.
- * crud-grid: This enables your div as crud-grid.
- * table: Url for the rest operations (e.g. api/persons)
- * columns: Columns which you want to show (show the definition in the example below)
+ * **class**: The style of your div.
+ * **crud-grid**: This enables your div as crud-grid.
+ * **table**: Url for the rest operations (e.g. api/persons)
+ * **columns**: Columns which you want to show (show the definition in the example below)
 ```javascript
    $scope.columns = [
                   {"name":"Id","class":"col-lg-1","autoincrement": "true"},
@@ -50,5 +50,5 @@ Usage
                   }
                  ];
 ```
- * use-file-upload: Flag, if the drag & drop functionality should be activated.
- * can-open-child-grid: Flag, if your master grid has a detail grid.
+ * **use-file-upload**: Flag, if the drag & drop functionality should be activated.
+ * **can-open-child-grid**: Flag, if your master grid has a detail grid.
