@@ -31,5 +31,25 @@ Usage
  * crud-grid: This enables your div as crud-grid.
  * table: Url for the rest operations (e.g. api/persons)
  * columns: Columns which you want to show
+ 
+```javascript
+   $scope.columns = [
+                  {"name":"Id","class":"col-lg-1","autoincrement": "true"},
+                  {"name":"Name", "class": "col-lg-6"},
+                  {"name":"Url", "class": "col-lg-2"},
+                  {
+                     "name":"FiletypeId", 
+                     "class" : "col-lg-3",
+                     "header":"Typ",
+                     "lookup":
+                     {
+                        "table":"FileTypes",
+                        "key":"Id",
+                        "value":"Name",
+                        "orderBy": {"field": "Name", "asc":"true"}
+                     },
+                  }
+                 ];
+```
  * use-file-upload: Flag, if the drag & drop functionality should be activated.
  * can-open-child-grid: Flag, if your master grid has a detail grid.
