@@ -30,7 +30,7 @@ Usage
  * class: The style of your div.
  * crud-grid: This enables your div as crud-grid.
  * table: Url for the rest operations (e.g. api/persons)
- * columns: Columns which you want to show
+ * columns: Columns which you want to show (show the definition in the example below)
  
 ```javascript
    $scope.columns = [
