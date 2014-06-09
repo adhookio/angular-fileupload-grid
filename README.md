@@ -22,8 +22,8 @@ Usage
 
  ```
  
-Parameters
--------------
+**Parameters**
+
 
  * class: The style of your div.
  * crud-grid: This enables your div as crud-grid.
