@@ -7,7 +7,7 @@ Installation
 -------------
 
 ```
-bower install https://github.com/woozles/angular-fileupload-grid.git
+bower install https://github.com/fingersteps/angular-fileupload-grid.git
 ```
 
 
